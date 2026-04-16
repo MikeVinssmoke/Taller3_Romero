@@ -37,7 +37,7 @@ class TaskDetailFragment : Fragment() {
         val etTitle = view.findViewById<EditText>(R.id.etTitle)
         val etDescription = view.findViewById<EditText>(R.id.etDescription)
         val etTime = view.findViewById<EditText>(R.id.etReminderTime)
-        val switchReminder = view.findViewById<Switch>(R.id.switchReminder)
+
         val btnSave = view.findViewById<Button>(R.id.btnSaveTask)
         val btnBack = view.findViewById<ImageButton>(R.id.btnBack)
 
@@ -49,7 +49,6 @@ class TaskDetailFragment : Fragment() {
             val title = etTitle.text.toString().trim()
             val description = etDescription.text.toString().trim()
             val time = etTime.text.toString().trim()
-            val hasReminder = switchReminder.isChecked
 
             // Validación mínima
             if (title.isEmpty()) {
@@ -57,13 +56,8 @@ class TaskDetailFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            // Guardar en repositorio
-            repository.addTask(title, description, time, hasReminder)
 
-            // Si tiene recordatorio, programarlo
-            if (hasReminder && time.isNotEmpty()) {
-                ReminderScheduler.schedule(requireContext(), title, time)
-            }
+            repository.addTask(title, description, time, false)
 
             Toast.makeText(requireContext(), "Tarea guardada", Toast.LENGTH_SHORT).show()
             findNavController().navigateUp()
