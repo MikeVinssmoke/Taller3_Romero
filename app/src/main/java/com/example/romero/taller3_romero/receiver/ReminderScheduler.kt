@@ -47,4 +47,6 @@ object ReminderScheduler {
             pendingIntent
         )
     }
+
+    git add .
 }
