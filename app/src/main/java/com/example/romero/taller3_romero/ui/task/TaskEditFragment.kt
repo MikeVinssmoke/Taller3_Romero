@@ -41,7 +41,7 @@ class TaskEditFragment : Fragment() {
         val etTitle = view.findViewById<EditText>(R.id.etTitle)
         val etDescription = view.findViewById<EditText>(R.id.etDescription)
         val etTime = view.findViewById<EditText>(R.id.etReminderTime)
-        val switchReminder = view.findViewById<Switch>(R.id.switchReminder)
+
         val btnSave = view.findViewById<Button>(R.id.btnSaveTask)
         val btnBack = view.findViewById<ImageButton>(R.id.btnBack)
 
@@ -57,7 +57,7 @@ class TaskEditFragment : Fragment() {
         etTitle.setText(task.title)
         etDescription.setText(task.description)
         etTime.setText(task.reminderTime)
-        switchReminder.isChecked = task.hasReminder
+
 
         btnBack.setOnClickListener {
             findNavController().navigateUp()
@@ -67,7 +67,6 @@ class TaskEditFragment : Fragment() {
             val title = etTitle.text.toString().trim()
             val description = etDescription.text.toString().trim()
             val time = etTime.text.toString().trim()
-            val hasReminder = switchReminder.isChecked
 
             if (title.isEmpty()) {
                 Toast.makeText(requireContext(), "El título no puede estar vacío", Toast.LENGTH_SHORT).show()
@@ -79,14 +78,12 @@ class TaskEditFragment : Fragment() {
                 title = title,
                 description = description,
                 reminderTime = time,
-                hasReminder = hasReminder
+                hasReminder = task.hasReminder  // conserva el valor que ya tenía
             )
 
             repository.updateTask(updatedTask)
 
-            if (hasReminder && time.isNotEmpty()) {
-                ReminderScheduler.schedule(requireContext(), title, time)
-            }
+
 
             Toast.makeText(requireContext(), "Tarea actualizada", Toast.LENGTH_SHORT).show()
             findNavController().navigateUp()
