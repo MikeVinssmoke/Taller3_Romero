@@ -48,5 +48,5 @@ object ReminderScheduler {
         )
     }
 
-    git add .
+
 }

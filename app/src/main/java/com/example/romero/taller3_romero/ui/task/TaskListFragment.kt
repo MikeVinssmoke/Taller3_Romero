@@ -29,7 +29,7 @@ class TaskListFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return inflater.inflate(R.layout.fragment_task_list, container, false)
     }
 
@@ -40,17 +40,30 @@ class TaskListFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.recyclerTasks)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
         etSearch = view.findViewById(R.id.etSearch)
 
-        adapter = TaskAdapter(repository.getAllTasks()) { task, anchorView ->
-            mostrarMenu(task, anchorView)
-        }
+        // 🔥 NUEVO ADAPTER CON DOS LAMBDAS
+        adapter = TaskAdapter(
+            tasks = repository.getAllTasks(),
+
+            onTaskClick = { task ->
+                val action = TaskListFragmentDirections
+                    .actionListToView(taskId = task.id)
+                findNavController().navigate(action)
+            },
+
+            onMenuClick = { task, anchorView ->
+                mostrarMenu(task, anchorView)
+            }
+        )
+
         recyclerView.adapter = adapter
 
-        // Búsqueda en tiempo real — cada letra que escribes filtra la lista
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
             override fun afterTextChanged(s: Editable?) {
                 adapter.filter(s.toString())
             }
@@ -61,53 +74,72 @@ class TaskListFragment : Fragment() {
         }
     }
 
-    // Muestra el menú de 3 puntos con opciones: Editar, Activar alarma, Borrar
     private fun mostrarMenu(task: Task, anchorView: View) {
         val popup = PopupMenu(requireContext(), anchorView)
+
         popup.menu.add(0, 1, 0, "Editar")
-        popup.menu.add(0, 2, 1, if (task.hasReminder) "Desactivar alarma" else "Activar alarma")
+        popup.menu.add(
+            0,
+            2,
+            1,
+            if (task.hasReminder) "Desactivar alarma" else "Activar alarma"
+        )
         popup.menu.add(0, 3, 2, "Borrar")
 
         popup.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
+
                 1 -> {
-                    // Navegar a editar pasando el ID de la tarea
-                    val action = TaskListFragmentDirections.actionListToEdit(taskId = task.id)
+                    val action = TaskListFragmentDirections
+                        .actionListToEdit(taskId = task.id)
                     findNavController().navigate(action)
                     true
                 }
+
                 2 -> {
-                    // Activar o desactivar la alarma
                     val updatedTask = task.copy(hasReminder = !task.hasReminder)
                     repository.updateTask(updatedTask)
 
                     if (updatedTask.hasReminder && updatedTask.reminderTime.isNotEmpty()) {
-                        ReminderScheduler.schedule(requireContext(), updatedTask.title, updatedTask.reminderTime)
-                        Toast.makeText(requireContext(), "Alarma activada para ${updatedTask.reminderTime}", Toast.LENGTH_SHORT).show()
+                        ReminderScheduler.schedule(
+                            requireContext(),
+                            updatedTask.title,
+                            updatedTask.reminderTime
+                        )
+                        Toast.makeText(
+                            requireContext(),
+                            "Alarma activada para ${updatedTask.reminderTime}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     } else {
-                        Toast.makeText(requireContext(), "Alarma desactivada", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "Alarma desactivada",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                     adapter.updateTasks(repository.getAllTasks())
                     true
                 }
+
                 3 -> {
-                    // Borrar la tarea
                     repository.deleteTask(task.id)
                     adapter.updateTasks(repository.getAllTasks())
                     Toast.makeText(requireContext(), "Tarea eliminada", Toast.LENGTH_SHORT).show()
                     true
                 }
+
                 else -> false
             }
         }
+
         popup.show()
     }
 
     override fun onResume() {
         super.onResume()
         adapter.updateTasks(repository.getAllTasks())
-        // Limpiamos la búsqueda al volver para mostrar todas las tareas
         etSearch.setText("")
     }
 }

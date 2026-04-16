@@ -11,10 +11,10 @@ import com.example.romero.taller3_romero.data.task.Task
 
 class TaskAdapter(
     private var tasks: List<Task>,
-    private val onMenuClick: (Task, View) -> Unit
+    private val onTaskClick: (Task) -> Unit,      // clic en la tarea → ver detalle
+    private val onMenuClick: (Task, View) -> Unit  // clic en 3 puntos → menú
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
-    // Esta es la lista completa sin filtrar — la guardamos para poder restaurarla
     private var allTasks: List<Task> = tasks
 
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -36,7 +36,12 @@ class TaskAdapter(
         holder.tvDescription.text = task.description
         holder.tvTime.text = if (task.hasReminder) "⏰ ${task.reminderTime}" else ""
 
-        // Al pulsar los 3 puntos, le pasamos la tarea y la vista para anclar el menú
+        // Clic en cualquier parte de la tarjeta → ver detalle
+        holder.itemView.setOnClickListener {
+            onTaskClick(task)
+        }
+
+        // Clic en los 3 puntos → menú
         holder.btnMenu.setOnClickListener { view ->
             onMenuClick(task, view)
         }
@@ -44,15 +49,12 @@ class TaskAdapter(
 
     override fun getItemCount(): Int = tasks.size
 
-    // Actualiza la lista completa (cuando agregas o editas una tarea)
     fun updateTasks(newTasks: List<Task>) {
         allTasks = newTasks
         tasks = newTasks
         notifyDataSetChanged()
     }
 
-    // Filtra según el texto que escribe el usuario
-    // Si el texto está vacío, muestra todas
     fun filter(query: String) {
         tasks = if (query.isEmpty()) {
             allTasks
