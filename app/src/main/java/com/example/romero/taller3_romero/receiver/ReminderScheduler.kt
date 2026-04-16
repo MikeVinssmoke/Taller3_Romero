@@ -1,7 +1,5 @@
 package com.example.romero.taller3_romero.receiver
 
-
-
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
@@ -11,19 +9,18 @@ import java.util.Calendar
 object ReminderScheduler {
 
     fun schedule(context: Context, taskTitle: String, timeString: String) {
-        // Separamos "HH:mm" en horas y minutos
         val parts = timeString.split(":")
         if (parts.size != 2) return
 
         val hour = parts[0].toIntOrNull() ?: return
         val minute = parts[1].toIntOrNull() ?: return
 
-        // Construimos el Calendar con la hora indicada del día de hoy
         val calendar = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, hour)
             set(Calendar.MINUTE, minute)
             set(Calendar.SECOND, 0)
-            // Si la hora ya pasó hoy, programamos para mañana
+            set(Calendar.MILLISECOND, 0)
+            // Si la hora ya pasó hoy, la programamos para mañana
             if (before(Calendar.getInstance())) {
                 add(Calendar.DAY_OF_YEAR, 1)
             }
@@ -33,9 +30,12 @@ object ReminderScheduler {
             putExtra("task_title", taskTitle)
         }
 
+        // Usamos el título como parte del ID para que cada tarea tenga su propia alarma
+        val requestCode = taskTitle.hashCode()
+
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            System.currentTimeMillis().toInt(), // ID único para cada recordatorio
+            requestCode,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )

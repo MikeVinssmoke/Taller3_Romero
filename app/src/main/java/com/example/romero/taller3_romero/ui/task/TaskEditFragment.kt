@@ -1,7 +1,6 @@
 package com.example.romero.taller3_romero.ui.task
 
-
-
+import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.Switch
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -18,10 +16,10 @@ import com.example.romero.taller3_romero.R
 import com.example.romero.taller3_romero.data.task.Task
 import com.example.romero.taller3_romero.data.task.TaskRepository
 import com.example.romero.taller3_romero.receiver.ReminderScheduler
+import java.util.Calendar
 
 class TaskEditFragment : Fragment() {
 
-    // navArgs lee el argumento "taskId" que definimos en nav_graph.xml
     private val args: TaskEditFragmentArgs by navArgs()
     private lateinit var repository: TaskRepository
 
@@ -41,11 +39,9 @@ class TaskEditFragment : Fragment() {
         val etTitle = view.findViewById<EditText>(R.id.etTitle)
         val etDescription = view.findViewById<EditText>(R.id.etDescription)
         val etTime = view.findViewById<EditText>(R.id.etReminderTime)
-
         val btnSave = view.findViewById<Button>(R.id.btnSaveTask)
         val btnBack = view.findViewById<ImageButton>(R.id.btnBack)
 
-        // Cargar los datos de la tarea actual
         val task = repository.getTaskById(args.taskId)
         if (task == null) {
             Toast.makeText(requireContext(), "Tarea no encontrada", Toast.LENGTH_SHORT).show()
@@ -53,11 +49,14 @@ class TaskEditFragment : Fragment() {
             return
         }
 
-        // Pre-llenar los campos con los datos existentes
         etTitle.setText(task.title)
         etDescription.setText(task.description)
         etTime.setText(task.reminderTime)
 
+        // Al tocar el campo de hora abre el reloj nativo
+        etTime.setOnClickListener {
+            abrirTimePicker(etTime)
+        }
 
         btnBack.setOnClickListener {
             findNavController().navigateUp()
@@ -78,15 +77,37 @@ class TaskEditFragment : Fragment() {
                 title = title,
                 description = description,
                 reminderTime = time,
-                hasReminder = task.hasReminder  // conserva el valor que ya tenía
+                hasReminder = task.hasReminder
             )
 
             repository.updateTask(updatedTask)
 
-
+            // Si tiene hora configurada y la alarma está activa, reprogramamos
+            if (updatedTask.hasReminder && time.isNotEmpty()) {
+                ReminderScheduler.schedule(requireContext(), title, time)
+                Toast.makeText(requireContext(), "Recordatorio reprogramado para las $time", Toast.LENGTH_SHORT).show()
+            }
 
             Toast.makeText(requireContext(), "Tarea actualizada", Toast.LENGTH_SHORT).show()
             findNavController().navigateUp()
         }
+    }
+
+    private fun abrirTimePicker(etTime: EditText) {
+        val calendar = Calendar.getInstance()
+        val horaActual = calendar.get(Calendar.HOUR_OF_DAY)
+        val minutoActual = calendar.get(Calendar.MINUTE)
+
+        val timePicker = TimePickerDialog(
+            requireContext(),
+            { _, hour, minute ->
+                val timeFormatted = String.format("%02d:%02d", hour, minute)
+                etTime.setText(timeFormatted)
+            },
+            horaActual,
+            minutoActual,
+            true
+        )
+        timePicker.show()
     }
 }
