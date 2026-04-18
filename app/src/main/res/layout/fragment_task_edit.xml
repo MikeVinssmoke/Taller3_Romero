@@ -89,9 +89,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:background="@android:color/white"
-                android:hint="HH:mm  (ej: 14:30)"
+                android:hint="Seleccionar hora..."
                 android:padding="10dp"
-                android:inputType="time"/>
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:clickable="true"
+                android:cursorVisible="false"
+                android:inputType="none"/>
 
 
 

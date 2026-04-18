@@ -71,6 +71,16 @@ class TaskListFragment : Fragment() {
 
         view.findViewById<View>(R.id.btnAddTask).setOnClickListener {
             findNavController().navigate(R.id.action_list_to_detail)
+
+
+        }
+
+        view.findViewById<View>(R.id.btnCalendar).setOnClickListener {
+            Toast.makeText(requireContext(), "Próximamente 🗓️", Toast.LENGTH_SHORT).show()
+        }
+
+        view.findViewById<View>(R.id.btnProfile).setOnClickListener {
+            Toast.makeText(requireContext(), "Próximamente 👤", Toast.LENGTH_SHORT).show()
         }
     }
 
