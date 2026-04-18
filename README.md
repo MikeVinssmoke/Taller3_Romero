@@ -1,5 +1,20 @@
 # Taller 3 – Lista de Tareas con Fragments, Persistencia y Recordatorios
 
+
+## 👥 Integrantes
+
+**Nombres:**  
+Sergio Rodríguez  
+Michael Alberto Romero Gonzalez  
+Anderson Sanguino Suarez  
+Marlon Andres Ramirez Chirivi
+
+**Códigos:**  
+1098820679  
+100487913  
+1005538900  
+1095950857
+
 ## ¿Qué se implementó?
 
 Se desarrolló una aplicación de lista de tareas (To-Do App) para Android utilizando Kotlin,
@@ -55,5 +70,23 @@ y `AlarmManager`.
 - `TaskReminderReceiver` — BroadcastReceiver que construye y muestra la notificación
 - `ReminderScheduler` — objeto que programa la alarma con AlarmManager
 
+
+![Pantalla 1](doc/ss1.png)
+![Pantalla 2](doc/ss2.png)
+![Pantalla 3](doc/ss3.png)
+![Pantalla 4](doc/ss4.png)
+![Pantalla 5](doc/ss5.png)
+![Pantalla 6](doc/ss6.png)
+![Pantalla 7](doc/ss7.png)
+![Pantalla 8](doc/ss8.png)
+![Pantalla 9](doc/ss9.png)
+![Pantalla 10](doc/ss10.png)
+![Pantalla 11](doc/ss11.png)
+![Pantalla 12](doc/ss12.png)
+![Pantalla 13](doc/ss13.png)
+![Pantalla 14](doc/ss14.png)
+![Pantalla 15](doc/ss15.png)
 ---
+
+
 
