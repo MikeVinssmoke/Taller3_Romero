@@ -26,7 +26,7 @@ class TaskRepository(context: Context) {
     // Contador para generar IDs únicos
     private var nextId: Int = prefs.getInt(KEY_NEXT_ID, 1)
 
-    // ── Operaciones públicas ──────────────────────────────────────────────────
+
 
     fun getAllTasks(): List<Task> = tasksInMemory.toList()
 
@@ -58,7 +58,6 @@ class TaskRepository(context: Context) {
 
     fun getTaskById(id: Int): Task? = tasksInMemory.find { it.id == id }
 
-    // ── Persistencia privada ──────────────────────────────────────────────────
 
     private fun saveAll() {
         prefs.edit().apply {
